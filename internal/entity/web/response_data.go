@@ -24,3 +24,9 @@ type OrderResponse struct {
 	Description string    `json:"description"`
 	ExpireAt    time.Time `json:"expire_at"`
 }
+
+type CategoryResponse struct {
+	Name        string            `json:"name"`
+	Description string            `json:"description"`
+	Product     []ProductResponse `json:"product"`
+}
