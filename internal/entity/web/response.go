@@ -46,3 +46,10 @@ func NewInternalServerErrorResponse(msg string) error {
 		Message: msg,
 	}
 }
+
+func NewStatusNotFound(msg string) error {
+	return &Response{
+		Code:    404,
+		Message: msg,
+	}
+}
