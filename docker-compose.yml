@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+  db:
+    container_name: db-app
+    image: postgres:alpine
+    hostname: db
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    restart: unless-stopped
+    volumes:
+      - ./data/backup:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - connection
+  
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - EXPOSE_PORT=${APP_PORT}
+    env_file: .env
+    restart: unless-stopped
+    ports:
+      ${APP_PORT}:${APP_PORT}
+    networks:
+      - connection
+    depends_on:
+      - db
+
+networks:
+  connection:
+    driver: bridge
