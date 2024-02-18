@@ -7,10 +7,10 @@ import (
 )
 
 type ProductRepository interface {
-	Create(req domain.ProductRequest) (error, *domain.Product)
-	FindID(id uint) (error, *domain.Product)
-	FindAll() (error, *[]domain.Product)
-	Update(id uint, req domain.Product) (error, *domain.Product)
+	Create(req domain.ProductRequest) (*domain.Product, error)
+	FindID(id uint) (*domain.Product, error)
+	FindAll() (*[]domain.Product, error)
+	Update(id uint, req domain.Product) (*domain.Product, error)
 }
 
 type product struct {
@@ -23,7 +23,7 @@ func NewProductRepository(db *gorm.DB) ProductRepository {
 	}
 }
 
-func (p *product) Create(req domain.ProductRequest) (error, *domain.Product) {
+func (p *product) Create(req domain.ProductRequest) (*domain.Product, error) {
 	product := domain.Product{
 		Name:        req.Name,
 		Discount:    req.Discount,
@@ -37,40 +37,40 @@ func (p *product) Create(req domain.ProductRequest) (error, *domain.Product) {
 
 	err := p.db.Create(&product).Error
 	if err != nil {
-		return web.NewInternalServerErrorResponse("cannot create product"), nil
+		return nil, web.NewInternalServerErrorResponse("cannot create product")
 	}
 
-	return web.NewCreatedResponse("success create product", req), &product
+	return &product, nil
 }
 
-func (p *product) FindID(id uint) (error, *domain.Product) {
+func (p *product) FindID(id uint) (*domain.Product, error) {
 	var product domain.Product
 	err := p.db.Where("id = ?", id).Find(&product).Error
 	if err != nil {
-		return web.NewInternalServerErrorResponse("cannot create product"), nil
+		return nil, web.NewInternalServerErrorResponse("cannot create product")
 	}
 
-	return nil, &product
+	return &product, nil
 }
 
-func (p *product) FindAll() (error, *[]domain.Product) {
+func (p *product) FindAll() (*[]domain.Product, error) {
 	var product []domain.Product
 	err := p.db.Find(&product).Error
 
 	if err != nil {
-		return web.NewInternalServerErrorResponse("cannot create product"), nil
+		return nil, web.NewInternalServerErrorResponse("cannot create product")
 	}
 
-	return nil, &product
+	return &product, nil
 }
 
-func (p *product) Update(id uint, req domain.Product) (error, *domain.Product) {
+func (p *product) Update(id uint, req domain.Product) (*domain.Product, error) {
 	var update domain.Product
 	err := p.db.Model(&req).Where("id = ?", id).Updates(&update).Error
 
 	if err != nil {
-		return web.NewInternalServerErrorResponse("cannot create product"), nil
+		return nil, web.NewInternalServerErrorResponse("cannot create product")
 	}
 
-	return nil, &update
+	return &update, nil
 }
