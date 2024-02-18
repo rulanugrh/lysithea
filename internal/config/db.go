@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/rulanugrh/lysithea/internal/entity/web"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func NewConnection() *gorm.DB {
+func NewConnection() (error, *gorm.DB) {
 	conf := GetConfig()
 	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable&TimeZone=Asia/Jakarta",
 		conf.Database.User,
@@ -20,11 +21,10 @@ func NewConnection() *gorm.DB {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Printf("Cant connect to Postgress because: %s", err.Error())
-		return nil
+		return web.NewInternalServerErrorResponse("Cant connect to postgresql"), nil
 	}
 
 	log.Print("Success connect to database")
 
-	return db
+	return nil, db
 }
