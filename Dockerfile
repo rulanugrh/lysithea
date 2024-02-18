@@ -10,5 +10,6 @@ RUN go mod tidy
 RUN go build -o cmd/main
 
 EXPOSE ${EXPOSE_PORT}
+RUN ./cmd/main migrate && ./cmd/main seeder
 
-CMD ["./main"]
+CMD ["./cmd/main", "serve"]
