@@ -2,7 +2,7 @@ package web
 
 import "time"
 
-type ProductCreated struct {
+type ProductResponse struct {
 	ID          uint      `json:"id"`
 	Name        string    `json:"name"`
 	Price       int       `json:"price"`
@@ -14,15 +14,7 @@ type ProductCreated struct {
 	Category    string    `json:"category"`
 }
 
-type GetProduct struct {
-	Product ProductCreated `json:"product"`
-}
-
-type GetAllProduct struct {
-	Product []ProductCreated `json:"list_product"`
-}
-
-type OrderCreated struct {
+type OrderResponse struct {
 	UUID        string    `json:"uuid"`
 	Username    string    `json:"user_name"`
 	Name        string    `json:"name"`
@@ -31,12 +23,4 @@ type OrderCreated struct {
 	Discount    int       `json:"discount"`
 	Description string    `json:"description"`
 	ExpireAt    time.Time `json:"expire_at"`
-}
-
-type GetOrder struct {
-	Order OrderCreated `json:"order"`
-}
-
-type GetAllOrder struct {
-	Order []OrderCreated `json:"list_order"`
 }
