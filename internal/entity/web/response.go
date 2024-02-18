@@ -53,3 +53,10 @@ func NewStatusNotFound(msg string) error {
 		Message: msg,
 	}
 }
+
+func NewStatusBadRequest(msg string) error {
+	return &Response{
+		Code:    400,
+		Message: msg,
+	}
+}
