@@ -46,7 +46,7 @@ func serve(db *gorm.DB, conf *config.App) {
 		log.Println("HTTP Failed Serving")
 	}
 
-	log.Printf("HTTP Success Running")
+	log.Println("HTTP Success Running")
 	log.Printf("Running at http://%s:%s", conf.Server.Host, conf.Server.Port)
 }
 
@@ -85,10 +85,10 @@ func help() {
 func migrate(db *gorm.DB) {
 	err := util.Migrate(db)
 	if err != nil {
-		log.Printf("Database Failed Migration")
+		log.Println("Database Failed Migration")
 	}
 
-	log.Printf("Database Success Migration")
+	log.Println("Database Success Migration")
 
 }
 
@@ -98,7 +98,7 @@ func seeder(db *gorm.DB) {
 		log.Printf("Failed Seeder")
 	}
 
-	log.Printf("Seeder Finished")
+	log.Println("Seeder Finished")
 }
 
 func main() {
