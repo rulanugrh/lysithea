@@ -12,6 +12,8 @@ type ProductRepository interface {
 	FindID(id uint) (*domain.Product, error)
 	FindAll(page int, perPage int) (*[]domain.Product, error)
 	Update(id uint, req domain.Product) (*domain.Product, error)
+	CountProduct() (int64, error)
+	CountProductByCategoryID(categoryID uint) (int64, error)
 }
 
 type product struct {
@@ -65,6 +67,17 @@ func (p *product) FindAll(page int, perPage int) (*[]domain.Product, error) {
 	return &product, nil
 }
 
+func (p *product) FindByCategoryID(page int, perPage int, categoryID uint) (*[]domain.Product, error) {
+	var product []domain.Product
+	err := p.db.Scopes(util.PaginationSet(page, perPage)).Where("category_id = ?", categoryID).Find(&product).Error
+
+	if err != nil {
+		return nil, web.StatusNotFound("data not found")
+	}
+
+	return &product, nil
+}
+
 func (p *product) Update(id uint, req domain.Product) (*domain.Product, error) {
 	var update domain.Product
 	err := p.db.Model(&req).Where("id = ?", id).Updates(&update).Error
@@ -74,4 +87,28 @@ func (p *product) Update(id uint, req domain.Product) (*domain.Product, error) {
 	}
 
 	return &update, nil
+}
+
+func (p *product) CountProduct() (int64, error) {
+	var model domain.Product
+	var count int64
+
+	err := p.db.Model(&model).Count(&count).Error
+	if err != nil {
+		return 0, web.InternalServerError("cannot count product data")
+	}
+
+	return count, nil
+}
+
+func (p *product) CountProductByCategoryID(categoryID uint) (int64, error) {
+	var model domain.Product
+	var count int64
+
+	err := p.db.Model(&model).Where("category_id = ?", categoryID).Count(&count).Error
+	if err != nil {
+		return 0, web.InternalServerError("cannot count product data")
+	}
+
+	return count, nil
 }
