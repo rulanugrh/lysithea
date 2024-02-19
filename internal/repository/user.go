@@ -32,22 +32,22 @@ func (u *user) Register(req domain.UserRequest) (*domain.User, error) {
 
 	findEmail := u.db.Where("email = ?", req.Email).Find(&req)
 	if findEmail.RowsAffected != 0 {
-		return nil, web.NewInternalServerErrorResponse("cannot request again, because email has been used")
+		return nil, web.InternalServerError("cannot request again, because email has been used")
 	}
 
 	err := u.db.Create(&user_request).Error
 	if err != nil {
-		return nil, web.NewInternalServerErrorResponse("cannot create user")
+		return nil, web.InternalServerError("cannot create user")
 	}
 
-	return &user_request, web.NewCreatedResponse("success create user", user_request)
+	return &user_request, web.Created("success create user", user_request)
 }
 
 func (u *user) Login(req domain.UserLogin) (*domain.User, error) {
 	var user_request domain.User
 	findEmail := u.db.Where("email = ?", req.Email).Find(&user_request)
 	if findEmail.RowsAffected == 0 {
-		return nil, web.NewStatusNotFound("user not found with this email")
+		return nil, web.StatusNotFound("user not found with this email")
 	}
 
 	return &user_request, nil

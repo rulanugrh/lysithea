@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewConnection() (error, *gorm.DB) {
+func NewConnection() (*gorm.DB, error) {
 	conf := GetConfig()
 	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable&TimeZone=Asia/Jakarta",
 		conf.Database.User,
@@ -21,10 +21,10 @@ func NewConnection() (error, *gorm.DB) {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return web.NewInternalServerErrorResponse("Cant connect to postgresql"), nil
+		return nil, web.InternalServerError("Cant connect to postgresql")
 	}
 
 	log.Print("Success connect to database")
 
-	return nil, db
+	return db, nil
 }

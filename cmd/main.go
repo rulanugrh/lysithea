@@ -63,7 +63,7 @@ func seeder(db *gorm.DB) {
 }
 
 func main() {
-	err, db := config.NewConnection()
+	db, err := config.NewConnection()
 	if err != nil {
 		log.Printf("error to connect database %v", err)
 	}
