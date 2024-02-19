@@ -12,6 +12,7 @@ type ProductRepository interface {
 	FindID(id uint) (*domain.Product, error)
 	FindAll(page int, perPage int) (*[]domain.Product, error)
 	Update(id uint, req domain.Product) (*domain.Product, error)
+	FindByCategoryID(page int, perPage int, categoryID uint) (*[]domain.Product, error)
 	CountProduct() (int64, error)
 	CountProductByCategoryID(categoryID uint) (int64, error)
 }

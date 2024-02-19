@@ -15,6 +15,8 @@ import (
 type ProductHandler interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	FindID(w http.ResponseWriter, r *http.Request)
+	FindAllByCategoryID(w http.ResponseWriter, r *http.Request)
+	FindAll(w http.ResponseWriter, r *http.Request)
 }
 
 type product struct {
@@ -56,8 +58,7 @@ func (p *product) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *product) FindID(w http.ResponseWriter, r *http.Request) {
-	id := strings.TrimPrefix(r.URL.Path, "/api/v1/product/find/")
-	converID, err := strconv.Atoi(id)
+	converID, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/api/v1/product/find/"))
 	if err != nil {
 		w.WriteHeader(500)
 		return
@@ -66,6 +67,66 @@ func (p *product) FindID(w http.ResponseWriter, r *http.Request) {
 	data, err := p.service.FindID(uint(converID))
 	if err != nil {
 		response, err := json.Marshal(web.StatusNotFound("data not found with this id"))
+		if err != nil {
+			w.WriteHeader(500)
+			return
+		}
+
+		w.WriteHeader(404)
+		w.Write(response)
+		return
+	}
+
+	response, err := json.Marshal(web.Success("data found", data))
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write(response)
+}
+
+func (p *product) FindAll(w http.ResponseWriter, r *http.Request) {
+	per_page, _ := strconv.Atoi(r.URL.Query().Get("per_page"))
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+
+	data, err := p.service.FindAll(page, per_page)
+	if err != nil {
+		response, err := json.Marshal(web.StatusNotFound("data not found"))
+		if err != nil {
+			w.WriteHeader(500)
+			return
+		}
+
+		w.WriteHeader(404)
+		w.Write(response)
+		return
+	}
+
+	response, err := json.Marshal(web.Success("data found", data))
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write(response)
+}
+
+func (p *product) FindAllByCategoryID(w http.ResponseWriter, r *http.Request) {
+	converID, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/api/v1/product/category/"))
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+
+	per_page, _ := strconv.Atoi(r.URL.Query().Get("per_page"))
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+
+	data, err := p.service.FindAllByCategoryID(uint(converID), page, per_page)
+	if err != nil {
+		response, err := json.Marshal(web.StatusNotFound("data not found"))
 		if err != nil {
 			w.WriteHeader(500)
 			return

@@ -12,6 +12,7 @@ type ProductService interface {
 	Create(req domain.ProductRequest) (*web.ProductResponse, error)
 	FindID(id uint) (*web.ProductResponse, error)
 	FindAll(page int, perPage int) (*web.Pagination, error)
+	FindAllByCategoryID(categoryID uint, page int, perPage int) (*web.Pagination, error)
 }
 
 type product struct {
@@ -90,6 +91,48 @@ func (p *product) FindAll(page int, perPage int) (*web.Pagination, error) {
 	}
 
 	count, err := p.repo.CountProduct()
+	if err != nil {
+		return nil, web.InternalServerError(err.Error())
+	}
+
+	total := float64(count) / float64(perPage)
+	result := web.Pagination{
+		Metadata: web.Metadata{
+			Page:      page,
+			PerPage:   perPage,
+			TotalData: int64(count),
+			TotalPage: int64(math.Ceil(total)),
+		},
+		Data: response,
+	}
+
+	return &result, nil
+}
+
+func (p *product) FindAllByCategoryID(categoryID uint, page int, perPage int) (*web.Pagination, error) {
+	data, err := p.repo.FindByCategoryID(page, perPage, categoryID)
+	if err != nil {
+		return nil, web.StatusNotFound(err.Error())
+	}
+
+	var response []web.ProductResponse
+	for _, rp := range *data {
+		result := web.ProductResponse{
+			ID:          rp.ID,
+			Name:        rp.Name,
+			Discount:    rp.Discount,
+			Price:       rp.Price,
+			Stock:       rp.Stock,
+			ExpireAt:    rp.ExpireAt,
+			Owner:       rp.Owner,
+			Category:    rp.Category.Name,
+			Description: rp.Description,
+		}
+
+		response = append(response, result)
+	}
+
+	count, err := p.repo.CountProductByCategoryID(categoryID)
 	if err != nil {
 		return nil, web.InternalServerError(err.Error())
 	}
