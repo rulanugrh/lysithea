@@ -7,9 +7,8 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN go mod tidy
-RUN go build -o cmd/main
-
+RUN go build ./cmd/main.go
+RUN ./main migrate && ./main seeder
 EXPOSE ${EXPOSE_PORT}
-RUN ./cmd/main migrate && ./cmd/main seeder
 
-CMD ["./cmd/main", "serve"]
+CMD [ "./main", "serve" ]

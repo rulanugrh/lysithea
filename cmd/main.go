@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/rulanugrh/lysithea/internal/config"
@@ -44,11 +43,11 @@ func serve(db *gorm.DB, conf *config.App) {
 	}
 	err := server.ListenAndServe()
 	if err != nil {
-		log.Printf("[%s %d:%d:%d] HTTP Failed Serving", time.DateOnly, time.Hour, time.Minute, time.Second)
+		log.Println("HTTP Failed Serving")
 	}
 
-	log.Printf("[%s %d:%d:%d] HTTP Success Running", time.DateOnly, time.Hour, time.Minute, time.Second)
-	log.Printf("[%s %d:%d:%d] Running at http://%s:%s", time.DateOnly, time.Hour, time.Minute, time.Second, conf.Server.Host, conf.Server.Port)
+	log.Printf("HTTP Success Running")
+	log.Printf("Running at http://%s:%s", conf.Server.Host, conf.Server.Port)
 }
 
 func help() {
@@ -86,20 +85,20 @@ func help() {
 func migrate(db *gorm.DB) {
 	err := util.Migrate(db)
 	if err != nil {
-		log.Printf("[%s %d:%d:%d] Database Failed Migration", time.DateOnly, time.Hour, time.Minute, time.Second)
+		log.Printf("Database Failed Migration")
 	}
 
-	log.Printf("[%s %d:%d:%d] Database Success Migration", time.DateOnly, time.Hour, time.Minute, time.Second)
+	log.Printf("Database Success Migration")
 
 }
 
 func seeder(db *gorm.DB) {
 	err := util.Seeder(db)
 	if err != nil {
-		log.Printf("[%s %d:%d:%d] Failed Seeder", time.DateOnly, time.Hour, time.Minute, time.Second)
+		log.Printf("Failed Seeder")
 	}
 
-	log.Printf("[%s %d:%d:%d] Seeder Finished", time.DateOnly, time.Hour, time.Minute, time.Second)
+	log.Printf("Seeder Finished")
 }
 
 func main() {

@@ -9,8 +9,6 @@ services:
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_DB=${DB_NAME}
     restart: unless-stopped
-    volumes:
-      - ./data/backup:/var/lib/postgresql/data
     ports:
       - 127.0.0.1:5432:5432
     networks:
@@ -22,7 +20,16 @@ services:
       dockerfile: Dockerfile
       args:
         - EXPOSE_PORT=${APP_PORT}
-    env_file: .env
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - APP_HOST=${APP_HOST}
+      - APP_PORT=${APP_PORT}
+      - APP_ORIGIN=${APP_ORIGIN}
+      - APP_SECRET=${APP_SECRET}
     restart: unless-stopped
     ports:
       - 3000:3000
