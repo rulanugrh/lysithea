@@ -31,6 +31,15 @@ type CategoryResponse struct {
 	Product     []ProductResponse `json:"product"`
 }
 
+type UserRegister struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+type UserLogin struct {
+	Token string `json:"token"`
+}
+
 type Pagination struct {
 	Metadata Metadata    `json:"_metadata"`
 	Data     interface{} `json:"data"`
