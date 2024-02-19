@@ -24,6 +24,7 @@ func NewOrderRepository(db *gorm.DB) OrderRepository {
 }
 
 func (o *order) Create(req domain.Order) (*domain.Order, error) {
+	req.UUID = util.GenerateUUID()
 	err := o.db.Create(&req).Error
 	if err != nil {
 		return nil, web.InternalServerError("cannot create order")
