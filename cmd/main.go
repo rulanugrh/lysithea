@@ -1,15 +1,55 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/rulanugrh/lysithea/internal/config"
+	handler "github.com/rulanugrh/lysithea/internal/http"
+	"github.com/rulanugrh/lysithea/internal/repository"
+	"github.com/rulanugrh/lysithea/internal/route"
+	"github.com/rulanugrh/lysithea/internal/service"
 	"github.com/rulanugrh/lysithea/internal/util"
 	"gorm.io/gorm"
 )
+
+func serve(db *gorm.DB, conf *config.App) {
+	app := mux.NewRouter().StrictSlash(true)
+
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+	userHandler := handler.NewUserHandler(userService)
+
+	productRepository := repository.NewProductRepository(db)
+	productService := service.NewProductService(productRepository)
+	productHandler := handler.NewProductHandler(productService)
+
+	orderRepository := repository.NewOrderRepository(db)
+	orderService := service.NewOrderService(orderRepository)
+	orderHandler := handler.NewOrderHandler(orderService)
+
+	route.UserRouter(app, userHandler)
+	route.ProductRoute(app, productHandler)
+	route.OrderRouter(app, orderHandler)
+
+	host := fmt.Sprintf("%s:%s", conf.Server.Host, conf.Server.Port)
+	server := http.Server{
+		Addr:    host,
+		Handler: app,
+	}
+	err := server.ListenAndServe()
+	if err != nil {
+		log.Printf("[%s %d:%d:%d] HTTP Failed Serving", time.DateOnly, time.Hour, time.Minute, time.Second)
+	}
+
+	log.Printf("[%s %d:%d:%d] HTTP Success Running", time.DateOnly, time.Hour, time.Minute, time.Second)
+	log.Printf("[%s %d:%d:%d] Running at http://%s:%s", time.DateOnly, time.Hour, time.Minute, time.Second, conf.Server.Host, conf.Server.Port)
+}
 
 func help() {
 	helpContent := [][]string{
@@ -68,6 +108,8 @@ func main() {
 		log.Printf("error to connect database %v", err)
 	}
 
+	conf := config.GetConfig()
+
 	args := os.Args[1]
 
 	switch args {
@@ -77,6 +119,8 @@ func main() {
 		seeder(db)
 	case "help":
 		help()
+	case "serve":
+		serve(db, conf)
 	default:
 		println("Use args help to show message")
 	}
