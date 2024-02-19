@@ -14,16 +14,23 @@ type UserService interface {
 }
 
 type user struct {
-	repo repository.UserRepository
+	repo     repository.UserRepository
+	validate middleware.ValidationInterface
 }
 
-func NewUserService(repo repository.UserRepository) UserService {
+func NewUserService(repo repository.UserRepository, validate middleware.ValidationInterface) UserService {
 	return &user{
-		repo: repo,
+		repo:     repo,
+		validate: validate,
 	}
 }
 
 func (u *user) Register(req domain.UserRequest) (*web.UserRegister, error) {
+	err := u.validate.Validate(req)
+	if err != nil {
+		return nil, u.validate.ValidationMessage(err)
+	}
+
 	password, err := bcrypt.GenerateFromPassword([]byte(req.Password), 14)
 	if err != nil {
 		return nil, web.StatusBadRequest("cannot generate hash password")
@@ -49,6 +56,11 @@ func (u *user) Register(req domain.UserRequest) (*web.UserRegister, error) {
 	return &response, nil
 }
 func (u *user) Login(req domain.UserLogin) (*web.UserLogin, error) {
+	err := u.validate.Validate(req)
+	if err != nil {
+		return nil, u.validate.ValidationMessage(err)
+	}
+
 	data, err := u.repo.Login(req)
 	if err != nil {
 		return nil, web.StatusNotFound("email not found")

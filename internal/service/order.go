@@ -5,6 +5,7 @@ import (
 
 	"github.com/rulanugrh/lysithea/internal/entity/domain"
 	"github.com/rulanugrh/lysithea/internal/entity/web"
+	"github.com/rulanugrh/lysithea/internal/middleware"
 	"github.com/rulanugrh/lysithea/internal/repository"
 )
 
@@ -15,16 +16,23 @@ type OrderService interface {
 }
 
 type order struct {
-	repo repository.OrderRepository
+	repo     repository.OrderRepository
+	validate middleware.ValidationInterface
 }
 
-func NewOrderService(repo repository.OrderRepository) OrderService {
+func NewOrderService(repo repository.OrderRepository, validate middleware.ValidationInterface) OrderService {
 	return &order{
-		repo: repo,
+		repo:     repo,
+		validate: validate,
 	}
 }
 
 func (o *order) Create(req domain.Order) (*web.OrderResponse, error) {
+	err := o.validate.Validate(req)
+	if err != nil {
+		return nil, o.validate.ValidationMessage(err)
+	}
+
 	data, err := o.repo.Create(req)
 	if err != nil {
 		return nil, web.InternalServerError(err.Error())

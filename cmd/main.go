@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rulanugrh/lysithea/internal/config"
 	handler "github.com/rulanugrh/lysithea/internal/http"
+	"github.com/rulanugrh/lysithea/internal/middleware"
 	"github.com/rulanugrh/lysithea/internal/repository"
 	"github.com/rulanugrh/lysithea/internal/route"
 	"github.com/rulanugrh/lysithea/internal/service"
@@ -20,16 +21,17 @@ import (
 func serve(db *gorm.DB, conf *config.App) {
 	app := mux.NewRouter().StrictSlash(true)
 
+	validator := middleware.NewValidation()
 	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository)
+	userService := service.NewUserService(userRepository, validator)
 	userHandler := handler.NewUserHandler(userService)
 
 	productRepository := repository.NewProductRepository(db)
-	productService := service.NewProductService(productRepository)
+	productService := service.NewProductService(productRepository, validator)
 	productHandler := handler.NewProductHandler(productService)
 
 	orderRepository := repository.NewOrderRepository(db)
-	orderService := service.NewOrderService(orderRepository)
+	orderService := service.NewOrderService(orderRepository, validator)
 	orderHandler := handler.NewOrderHandler(orderService)
 
 	route.UserRouter(app, userHandler)

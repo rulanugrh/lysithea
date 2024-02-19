@@ -5,6 +5,7 @@ import (
 
 	"github.com/rulanugrh/lysithea/internal/entity/domain"
 	"github.com/rulanugrh/lysithea/internal/entity/web"
+	"github.com/rulanugrh/lysithea/internal/middleware"
 	"github.com/rulanugrh/lysithea/internal/repository"
 )
 
@@ -16,16 +17,23 @@ type ProductService interface {
 }
 
 type product struct {
-	repo repository.ProductRepository
+	repo     repository.ProductRepository
+	validate middleware.ValidationInterface
 }
 
-func NewProductService(repo repository.ProductRepository) ProductService {
+func NewProductService(repo repository.ProductRepository, validation middleware.ValidationInterface) ProductService {
 	return &product{
-		repo: repo,
+		repo:     repo,
+		validate: validation,
 	}
 }
 
 func (p *product) Create(req domain.ProductRequest) (*web.ProductResponse, error) {
+	err := p.validate.Validate(req)
+	if err != nil {
+		return nil, p.validate.ValidationMessage(err)
+	}
+
 	data, err := p.repo.Create(req)
 	if err != nil {
 		return nil, web.StatusBadRequest(err.Error())
