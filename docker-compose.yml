@@ -38,6 +38,55 @@ services:
     depends_on:
       - db
 
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
+    ports:
+      - "9300:9300"
+      - "9200:9200"
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      - network.host=0.0.0.0
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - connection
+    depends_on:
+      - db
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.3.2
+    ports:
+      - "5601:5601"
+    networks:
+      - connection
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.3.1
+    container_name: logstash
+    volumes:
+      - ./elk/pusher.conf:/usr/share/logstash/config/pusher.conf:ro
+      - ./elk/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./elk/postgresql-42.2.8.jar:/usr/share/logstash/logstash-core/lib/jars/postgresql-42.2.8.jar:ro
+    command: bash -c "/usr/share/logstash/bin/logstash-plugin install logstash-input-jdbc && logstash -f /usr/share/logstash/config/pusher.conf"
+    ports:
+      - "9601:9601"
+      - "5045:5045"
+    networks:
+      - connection
+    depends_on:
+      - elasticsearch
+      - kibana
+      - postgres
+
+volumes:
+  elasticsearch_data:
+
+
 networks:
   connection:
     driver: bridge
