@@ -30,3 +30,15 @@ type CategoryResponse struct {
 	Description string            `json:"description"`
 	Product     []ProductResponse `json:"product"`
 }
+
+type Pagination struct {
+	Metadata Metadata    `json:"_metadata"`
+	Data     interface{} `json:"data"`
+}
+
+type Metadata struct {
+	Page      int   `json:"page"`
+	PerPage   int   `json:"per_page"`
+	TotalData int64 `json:"data_count"`
+	TotalPage int64 `json:"page_count"`
+}
