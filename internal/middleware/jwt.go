@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"encoding/json"
+	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -49,4 +51,55 @@ func CheckToken(token string) (*jwtclaim, error) {
 	}
 
 	return claim, nil
+}
+
+func ValidateToken(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		conf := config.GetConfig()
+		token := r.Header.Get("Authorization")
+
+		if token == "" {
+			response, err := json.Marshal(web.Unauthorized("you dont have token"))
+			if err != nil {
+				w.WriteHeader(500)
+				return
+			}
+
+			w.WriteHeader(401)
+			w.Write(response)
+			return
+		}
+
+		tokens, _ := jwt.ParseWithClaims(token, &jwtclaim{}, func(t *jwt.Token) (interface{}, error) {
+			return []byte(conf.Server.Secret), web.Forbidden("this is strict page")
+		})
+
+		claim, err := tokens.Claims.(*jwtclaim)
+		if !err {
+			response, err := json.Marshal(web.Unauthorized("you dont have token"))
+			if err != nil {
+				w.WriteHeader(500)
+				return
+			}
+
+			w.WriteHeader(401)
+			w.Write(response)
+			return
+		}
+
+		if claim.ExpiresAt.Unix() < time.Now().Unix() {
+			response, err := json.Marshal(web.Unauthorized("token expired"))
+			if err != nil {
+				w.WriteHeader(500)
+				return
+			}
+
+			w.WriteHeader(401)
+			w.Write(response)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+
+	})
 }
