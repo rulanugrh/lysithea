@@ -12,10 +12,10 @@ services:
     volumes:
       - ./data/backup:/var/lib/postgresql/data
     ports:
-      - "127.0.0.1:5432:5432"
+      - 127.0.0.1:5432:5432
     networks:
       - connection
-  
+
   app:
     build:
       context: .
@@ -25,7 +25,7 @@ services:
     env_file: .env
     restart: unless-stopped
     ports:
-      ${APP_PORT}:${APP_PORT}
+      - 3000:3000
     networks:
       - connection
     depends_on:
