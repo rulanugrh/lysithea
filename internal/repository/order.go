@@ -11,6 +11,7 @@ type OrderRepository interface {
 	Create(req domain.Order) (*domain.Order, error)
 	FindID(uuid string) (*domain.Order, error)
 	FindByUserID(userID uint, page int, perPage int) (*[]domain.Order, error)
+	CountOrderByUserID(userID uint) (int64, error)
 }
 
 type order struct {
