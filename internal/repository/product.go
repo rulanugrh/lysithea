@@ -15,6 +15,7 @@ type ProductRepository interface {
 	FindByCategoryID(page int, perPage int, categoryID uint) (*[]domain.Product, error)
 	CountProduct() (int64, error)
 	CountProductByCategoryID(categoryID uint) (int64, error)
+	GetProductBySelesction(selection []string) (*[]domain.Product, error)
 }
 
 type product struct {
@@ -112,4 +113,14 @@ func (p *product) CountProductByCategoryID(categoryID uint) (int64, error) {
 	}
 
 	return count, nil
+}
+
+func (p *product) GetProductBySelesction(selection []string) (*[]domain.Product, error) {
+	var model []domain.Product
+	err := p.db.Select(selection).Find(&model)
+	if err != nil {
+		return nil, web.StatusBadRequest("your selection not found")
+	}
+
+	return &model, nil
 }
