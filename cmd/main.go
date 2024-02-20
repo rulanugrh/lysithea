@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gorilla/mux"
 	"github.com/rulanugrh/lysithea/internal/config"
 	handler "github.com/rulanugrh/lysithea/internal/http"
@@ -18,17 +19,19 @@ import (
 	"gorm.io/gorm"
 )
 
-func serve(db *gorm.DB, conf *config.App) {
+func serve(db *gorm.DB, conf *config.App, es *elasticsearch.Client) {
 	app := mux.NewRouter().StrictSlash(true)
 
 	validator := middleware.NewValidation()
+
+	elasticService := service.NewElasticSearch(es)
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository, validator)
 	userHandler := handler.NewUserHandler(userService)
 
 	productRepository := repository.NewProductRepository(db)
 	productService := service.NewProductService(productRepository, validator)
-	productHandler := handler.NewProductHandler(productService)
+	productHandler := handler.NewProductHandler(productService, elasticService)
 
 	orderRepository := repository.NewOrderRepository(db)
 	orderService := service.NewOrderService(orderRepository, validator)
@@ -109,6 +112,11 @@ func main() {
 		log.Printf("error to connect database %v", err)
 	}
 
+	es, err := config.NewConnectionElastic()
+	if err != nil {
+		log.Printf("error to connect elasticsearch %v", err)
+	}
+
 	conf := config.GetConfig()
 
 	args := os.Args[1]
@@ -121,7 +129,7 @@ func main() {
 	case "help":
 		help()
 	case "serve":
-		serve(db, conf)
+		serve(db, conf, es)
 	default:
 		println("Use args help to show message")
 	}

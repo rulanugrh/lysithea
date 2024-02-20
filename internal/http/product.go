@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -17,15 +18,18 @@ type ProductHandler interface {
 	FindID(w http.ResponseWriter, r *http.Request)
 	FindAllByCategoryID(w http.ResponseWriter, r *http.Request)
 	FindAll(w http.ResponseWriter, r *http.Request)
+	FindBySearch(w http.ResponseWriter, r *http.Request)
 }
 
 type product struct {
-	service service.ProductService
+	service      service.ProductService
+	elasticsarch service.InterfaceElasticsearch
 }
 
-func NewProductHandler(service service.ProductService) ProductHandler {
+func NewProductHandler(service service.ProductService, elasticsearch service.InterfaceElasticsearch) ProductHandler {
 	return &product{
-		service: service,
+		service:      service,
+		elasticsarch: elasticsearch,
 	}
 }
 
@@ -138,6 +142,43 @@ func (p *product) FindAllByCategoryID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response, err := json.Marshal(web.Success("data found", data))
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write(response)
+}
+
+func (p *product) FindBySearch(w http.ResponseWriter, r *http.Request) {
+	per_page, _ := strconv.Atoi(r.URL.Query().Get("per_page"))
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	search := r.URL.Query().Get("search")
+
+	var buffer bytes.Buffer
+	data, err := p.elasticsarch.GetProductBySearch(page, per_page, search, buffer)
+	if err != nil {
+		response, err := json.Marshal(web.StatusBadRequest("cannot get data by search"))
+		if err != nil {
+			w.WriteHeader(500)
+			return
+		}
+
+		w.WriteHeader(400)
+		w.Write(response)
+		return
+	}
+
+	result := web.PaginationElastic{
+		Metadata: web.MetadataElastic{
+			Page:    page,
+			PerPage: per_page,
+		},
+		Data: data,
+	}
+
+	response, err := json.Marshal(web.Success("data found", result))
 	if err != nil {
 		w.WriteHeader(500)
 		return

@@ -51,3 +51,13 @@ type Metadata struct {
 	TotalData int64 `json:"data_count"`
 	TotalPage int64 `json:"page_count"`
 }
+
+type PaginationElastic struct {
+	Metadata MetadataElastic `json:"_metadata"`
+	Data     interface{}     `json:"data"`
+}
+
+type MetadataElastic struct {
+	Page    int `json:"page"`
+	PerPage int `json:"per_page"`
+}
