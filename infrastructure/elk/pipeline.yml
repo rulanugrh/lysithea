@@ -1,1 +1,1 @@
-keep
+xpack.monitoring.enabled: false
