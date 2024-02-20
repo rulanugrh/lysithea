@@ -83,6 +83,18 @@ services:
       - kibana
       - postgres
 
+  nginx-app:
+    container_name: nginx-app
+    image: nginx
+    hostname: gateway
+    ports:
+      - 80:80
+    restart: unless-stopped
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - connection
+
 volumes:
   elasticsearch_data:
 
