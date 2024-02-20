@@ -49,7 +49,7 @@ func (p *product) Create(req domain.ProductRequest) (*domain.Product, error) {
 
 func (p *product) FindID(id uint) (*domain.Product, error) {
 	var product domain.Product
-	err := p.db.Where("id = ?", id).Find(&product).Error
+	err := p.db.Where("id = ?", id).Preload("Category").Find(&product).Error
 	if err != nil {
 		return nil, web.InternalServerError("cannot create product")
 	}
@@ -59,7 +59,7 @@ func (p *product) FindID(id uint) (*domain.Product, error) {
 
 func (p *product) FindAll(page int, perPage int) (*[]domain.Product, error) {
 	var product []domain.Product
-	err := p.db.Scopes(util.PaginationSet(page, perPage)).Find(&product).Error
+	err := p.db.Scopes(util.PaginationSet(page, perPage)).Preload("Category").Find(&product).Error
 
 	if err != nil {
 		return nil, web.StatusNotFound("data not found")
@@ -70,7 +70,7 @@ func (p *product) FindAll(page int, perPage int) (*[]domain.Product, error) {
 
 func (p *product) FindByCategoryID(page int, perPage int, categoryID uint) (*[]domain.Product, error) {
 	var product []domain.Product
-	err := p.db.Scopes(util.PaginationSet(page, perPage)).Where("category_id = ?", categoryID).Find(&product).Error
+	err := p.db.Scopes(util.PaginationSet(page, perPage)).Where("category_id = ?", categoryID).Preload("Category").Find(&product).Error
 
 	if err != nil {
 		return nil, web.StatusNotFound("data not found")
