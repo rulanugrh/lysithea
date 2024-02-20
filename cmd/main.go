@@ -24,14 +24,13 @@ func serve(db *gorm.DB, conf *config.App, es *elasticsearch.Client) {
 
 	validator := middleware.NewValidation()
 
-	elasticService := service.NewElasticSearch(es)
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository, validator)
 	userHandler := handler.NewUserHandler(userService)
 
 	productRepository := repository.NewProductRepository(db)
-	productService := service.NewProductService(productRepository, validator)
-	productHandler := handler.NewProductHandler(productService, elasticService)
+	productService := service.NewProductService(productRepository, validator, es)
+	productHandler := handler.NewProductHandler(productService)
 
 	orderRepository := repository.NewOrderRepository(db)
 	orderService := service.NewOrderService(orderRepository, validator)

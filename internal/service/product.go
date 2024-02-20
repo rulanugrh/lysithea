@@ -1,8 +1,12 @@
 package service
 
 import (
+	"bytes"
+	"encoding/json"
+	"log"
 	"math"
 
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/rulanugrh/lysithea/internal/entity/domain"
 	"github.com/rulanugrh/lysithea/internal/entity/web"
 	"github.com/rulanugrh/lysithea/internal/middleware"
@@ -14,17 +18,20 @@ type ProductService interface {
 	FindID(id uint) (*web.ProductResponse, error)
 	FindAll(page int, perPage int) (*web.Pagination, error)
 	FindAllByCategoryID(categoryID uint, page int, perPage int) (*web.Pagination, error)
+	GetProductBySearch(page int, perPage int, search string, buf bytes.Buffer) (map[string]interface{}, error)
 }
 
 type product struct {
 	repo     repository.ProductRepository
 	validate middleware.ValidationInterface
+	es       *elasticsearch.Client
 }
 
-func NewProductService(repo repository.ProductRepository, validation middleware.ValidationInterface) ProductService {
+func NewProductService(repo repository.ProductRepository, validation middleware.ValidationInterface, es *elasticsearch.Client) ProductService {
 	return &product{
 		repo:     repo,
 		validate: validation,
+		es:       es,
 	}
 }
 
@@ -157,4 +164,60 @@ func (p *product) FindAllByCategoryID(categoryID uint, page int, perPage int) (*
 	}
 
 	return &result, nil
+}
+
+func (p *product) GetProductBySearch(page int, perPage int, search string, buf bytes.Buffer) (map[string]interface{}, error) {
+	query := map[string]interface{}{
+		"from":  page,
+		"limit": perPage,
+		"query": map[string]interface{}{
+			"bool": map[string]interface{}{
+				"should": []interface{}{
+					map[string]interface{}{
+						"match": map[string]interface{}{
+							"name": map[string]interface{}{
+								"query":         search,
+								"fuzziness":     "AUTO",
+								"prefix_length": 1,
+							},
+						},
+					},
+					map[string]interface{}{
+						"match": map[string]interface{}{
+							"expire_at": map[string]interface{}{
+								"query":         search,
+								"fuzziness":     "AUTO",
+								"prefix_length": 1,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	if err := json.NewEncoder(&buf).Encode(&query); err != nil {
+		log.Fatalf("Encoding error, %v", err.Error())
+	}
+
+	var resposeBind map[string]interface{}
+	res, err := p.es.Search(
+		p.es.Search.WithBody(&buf),
+		p.es.Search.WithPretty(),
+		p.es.Search.WithIndex("products"),
+		p.es.Search.WithTrackTotalHits(false),
+		p.es.Search.WithFilterPath("hits.hits._source.name",
+			"hits.hits._source.expire_at", "hits.hits._source.id"),
+	)
+
+	if err != nil {
+		log.Fatalf("Error getting response, %v", err.Error())
+	}
+
+	if err = json.NewDecoder(res.Body).Decode(&resposeBind); err != nil {
+		log.Fatalf("Error Decoder, %v", err.Error())
+	}
+
+	return resposeBind, nil
+
 }

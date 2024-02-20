@@ -31,6 +31,11 @@ type CategoryResponse struct {
 	Product     []ProductResponse `json:"product"`
 }
 
+type CategoryCreated struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
 type UserRegister struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`

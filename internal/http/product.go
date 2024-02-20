@@ -22,14 +22,12 @@ type ProductHandler interface {
 }
 
 type product struct {
-	service      service.ProductService
-	elasticsarch service.InterfaceElasticsearch
+	service service.ProductService
 }
 
-func NewProductHandler(service service.ProductService, elasticsearch service.InterfaceElasticsearch) ProductHandler {
+func NewProductHandler(service service.ProductService) ProductHandler {
 	return &product{
-		service:      service,
-		elasticsarch: elasticsearch,
+		service: service,
 	}
 }
 
@@ -157,7 +155,7 @@ func (p *product) FindBySearch(w http.ResponseWriter, r *http.Request) {
 	search := r.URL.Query().Get("search")
 
 	var buffer bytes.Buffer
-	data, err := p.elasticsarch.GetProductBySearch(page, per_page, search, buffer)
+	data, err := p.service.GetProductBySearch(page, per_page, search, buffer)
 	if err != nil {
 		response, err := json.Marshal(web.StatusBadRequest("cannot get data by search"))
 		if err != nil {
