@@ -97,8 +97,7 @@ services:
 
 volumes:
   elasticsearch_data:
-
-
+  
 networks:
   connection:
     driver: bridge
