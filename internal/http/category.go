@@ -35,7 +35,7 @@ func (c *category) Create(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(body, &req)
 	data, err := c.service.Create(req)
 	if err != nil {
-		response, err := json.Marshal(web.StatusBadRequest("cannot create category"))
+		response, err := json.Marshal(web.StatusBadRequest(err.Error()))
 		if err != nil {
 			w.WriteHeader(500)
 			return
