@@ -71,7 +71,7 @@ services:
     volumes:
       - ./elk/pusher.conf:/usr/share/logstash/config/pusher.conf:ro
       - ./elk/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - ./elk/postgresql-42.2.8.jar:/usr/share/logstash/logstash-core/lib/jars/postgresql-42.2.8.jar:ro
+      - ./elk/postgresql-42.7.1.jar:/usr/share/logstash/logstash-core/lib/jars/postgresql-42.7.1.jar:ro
     command: bash -c "/usr/share/logstash/bin/logstash-plugin install logstash-input-jdbc && logstash -f /usr/share/logstash/config/pusher.conf"
     ports:
       - "9601:9601"
