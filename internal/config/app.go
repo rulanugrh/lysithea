@@ -12,6 +12,7 @@ type App struct {
 		Port   string
 		Origin string
 		Secret string
+		URL    string
 	}
 
 	Database struct {
@@ -67,6 +68,7 @@ func initConfig() *App {
 	conf.Server.Port = os.Getenv("APP_PORT")
 	conf.Server.Host = os.Getenv("APP_HOST")
 	conf.Server.Origin = os.Getenv("APP_ORIGIN")
+	conf.Server.URL = os.Getenv("APP_URL")
 
 	conf.Elasticsearch.URL = os.Getenv("ELASTICSEARCH_URL")
 	conf.Elasticsearch.Username = os.Getenv("ELASTICSEARCH_USERNAME")

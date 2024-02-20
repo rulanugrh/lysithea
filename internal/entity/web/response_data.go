@@ -23,6 +23,7 @@ type OrderResponse struct {
 	Discount    int       `json:"discount"`
 	Description string    `json:"description"`
 	ExpireAt    time.Time `json:"expire_at"`
+	Status      string    `json:"status"`
 }
 
 type CategoryResponse struct {
@@ -65,4 +66,36 @@ type PaginationElastic struct {
 type MetadataElastic struct {
 	Page    int `json:"page"`
 	PerPage int `json:"per_page"`
+}
+
+type PaymentResponse struct {
+	OrderUUID          string    `json:"uuid"`
+	ProductName        string    `json:"product_name"`
+	ProductPrice       int       `json:"product_price"`
+	ProductOwner       string    `json:"product_owner"`
+	ProductExpire      time.Time `json:"product_expire"`
+	ProductDiscount    int       `json:"product_discount"`
+	ProductDescription string    `json:"product_description"`
+	TotalHarga         int       `json:"total_harga"`
+	Status             string    `json:"status"`
+}
+
+type BuyResponse struct {
+	ProductName        string `json:"product_name"`
+	ProductPrice       int    `json:"product_price"`
+	ProductDiscount    int    `json:"product_discount"`
+	ProductDescription string `json:"product_description"`
+	TotalHarga         int    `json:"total_harga"`
+	PayURL             string `json:"pay_url"`
+}
+
+type Cart struct {
+	ProductName        string    `json:"product_name"`
+	ProductPrice       int       `json:"product_price"`
+	ProductOwner       string    `json:"product_owner"`
+	ProductExpire      time.Time `json:"product_expire"`
+	ProductDiscount    int       `json:"product_discount"`
+	ProductDescription string    `json:"product_description"`
+	TotalBeli          int       `json:"total_beli"`
+	URLCheckout        string    `json:"url_checkout"`
 }

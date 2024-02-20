@@ -33,7 +33,7 @@ func serve(db *gorm.DB, conf *config.App, es *elasticsearch.Client) {
 	productHandler := handler.NewProductHandler(productService)
 
 	orderRepository := repository.NewOrderRepository(db)
-	orderService := service.NewOrderService(orderRepository, validator)
+	orderService := service.NewOrderService(orderRepository, validator, *conf)
 	orderHandler := handler.NewOrderHandler(orderService)
 
 	categoryRepository := repository.NewCategoryRepository(db)
