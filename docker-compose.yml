@@ -69,9 +69,9 @@ services:
     image: docker.elastic.co/logstash/logstash:7.3.1
     container_name: logstash
     volumes:
-      - ./elk/pusher.conf:/usr/share/logstash/config/pusher.conf:ro
-      - ./elk/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - ./elk/postgresql-42.7.1.jar:/usr/share/logstash/logstash-core/lib/jars/postgresql-42.7.1.jar:ro
+      - ./infrastructure/elk/pusher.conf:/usr/share/logstash/config/pusher.conf:ro
+      - ./infrastructure/elk/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./infrastructure/elk/postgresql-42.7.1.jar:/usr/share/logstash/logstash-core/lib/jars/postgresql-42.7.1.jar:ro
     command: bash -c "/usr/share/logstash/bin/logstash-plugin install logstash-input-jdbc && logstash -f /usr/share/logstash/config/pusher.conf"
     ports:
       - "9601:9601"
