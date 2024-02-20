@@ -13,5 +13,5 @@ func ProductRoute(router *mux.Router, handler handler.ProductHandler) {
 	subRouter.HandleFunc("/category/:id", handler.FindAllByCategoryID).Methods("GET")
 	subRouter.HandleFunc("/find/:id", handler.FindID).Methods("GET")
 	subRouter.HandleFunc("/find", handler.FindAll).Methods("GET")
-	subRouter.HandleFunc("/search", handler.FindBySearch).Methods("GET")
+	subRouter.HandleFunc("/get", handler.FindBySearch).Methods("GET")
 }

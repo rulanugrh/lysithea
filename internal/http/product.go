@@ -10,6 +10,7 @@ import (
 
 	"github.com/rulanugrh/lysithea/internal/entity/domain"
 	"github.com/rulanugrh/lysithea/internal/entity/web"
+	"github.com/rulanugrh/lysithea/internal/middleware"
 	"github.com/rulanugrh/lysithea/internal/service"
 )
 
@@ -41,22 +42,36 @@ func (p *product) Create(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(body, &req)
 
-	data, err := p.service.Create(req)
-	if err != nil {
-		response, _ := json.Marshal(web.StatusBadRequest(err.Error()))
-		w.WriteHeader(400)
+	token := r.Header.Get("Authorization")
+	claims, _ := middleware.CheckToken(token)
+	if err := middleware.CheckPermission(claims); err != nil {
+		response, err := json.Marshal(web.Forbidden("sorry you not admin or owner"))
+		if err != nil {
+			w.WriteHeader(500)
+			return
+		}
+
+		w.WriteHeader(403)
 		w.Write(response)
 		return
-	}
+	} else {
+		data, err := p.service.Create(req)
+		if err != nil {
+			response, _ := json.Marshal(web.StatusBadRequest(err.Error()))
+			w.WriteHeader(400)
+			w.Write(response)
+			return
+		}
 
-	response, err := json.Marshal(web.Created("success create product", data))
-	if err != nil {
-		w.WriteHeader(500)
-		return
-	}
+		response, err := json.Marshal(web.Created("success create product", data))
+		if err != nil {
+			w.WriteHeader(500)
+			return
+		}
 
-	w.WriteHeader(201)
-	w.Write(response)
+		w.WriteHeader(201)
+		w.Write(response)
+	}
 }
 
 func (p *product) FindID(w http.ResponseWriter, r *http.Request) {

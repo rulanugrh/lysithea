@@ -9,6 +9,7 @@ import (
 
 	"github.com/rulanugrh/lysithea/internal/entity/domain"
 	"github.com/rulanugrh/lysithea/internal/entity/web"
+	"github.com/rulanugrh/lysithea/internal/middleware"
 	"github.com/rulanugrh/lysithea/internal/service"
 )
 
@@ -36,9 +37,33 @@ func (c *category) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Unmarshal(body, &req)
-	data, err := c.service.Create(req)
-	if err != nil {
-		response, err := json.Marshal(web.StatusBadRequest(err.Error()))
+	token := r.Header.Get("Authorization")
+	claims, _ := middleware.CheckToken(token)
+	if claims.ID != 1 {
+		response, err := json.Marshal(web.Forbidden("sorry you not admin"))
+		if err != nil {
+			w.WriteHeader(500)
+			return
+		}
+
+		w.WriteHeader(403)
+		w.Write(response)
+		return
+	} else {
+		data, err := c.service.Create(req)
+		if err != nil {
+			response, err := json.Marshal(web.StatusBadRequest(err.Error()))
+			if err != nil {
+				w.WriteHeader(500)
+				return
+			}
+
+			w.WriteHeader(200)
+			w.Write(response)
+			return
+		}
+
+		response, err := json.Marshal(web.Created("success create category", data))
 		if err != nil {
 			w.WriteHeader(500)
 			return
@@ -46,17 +71,7 @@ func (c *category) Create(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(200)
 		w.Write(response)
-		return
 	}
-
-	response, err := json.Marshal(web.Created("success create category", data))
-	if err != nil {
-		w.WriteHeader(500)
-		return
-	}
-
-	w.WriteHeader(200)
-	w.Write(response)
 }
 
 func (c *category) GetCategoryBySearch(w http.ResponseWriter, r *http.Request) {

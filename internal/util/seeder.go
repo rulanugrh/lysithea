@@ -6,23 +6,29 @@ import (
 )
 
 func Seeder(db *gorm.DB) error {
-	err := db.Create(&domain.Role{
-		ID:          1,
-		Name:        "Administrator",
-		Description: "this is role administrator",
-	}).Error
-	if err != nil {
-		return err
+	role := []domain.Role{
+		{
+			ID:          1,
+			Name:        "Administrator",
+			Description: "this is role administrator",
+		},
+		{
+			ID:          2,
+			Name:        "Owner",
+			Description: "this is role for owner product",
+		},
+		{
+			ID:          3,
+			Name:        "User",
+			Description: "this is role user",
+		},
 	}
 
-	err = db.Create(&domain.Role{
-		ID:          2,
-		Name:        "User",
-		Description: "this is role user",
-	}).Error
-
-	if err != nil {
-		return err
+	for _, r := range role {
+		err := db.Create(&r).Error
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
