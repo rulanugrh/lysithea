@@ -22,8 +22,10 @@ type App struct {
 		Pass string
 	}
 
-	Opentelemetry struct {
-		Name string
+	Elasticsearch struct {
+		URL      string
+		Username string
+		Password string
 	}
 }
 
@@ -50,7 +52,7 @@ func initConfig() *App {
 		conf.Server.Port = ""
 		conf.Server.Origin = ""
 
-		conf.Opentelemetry.Name = ""
+		conf.Elasticsearch.URL = ""
 
 		return &conf
 	}
@@ -66,6 +68,9 @@ func initConfig() *App {
 	conf.Server.Host = os.Getenv("APP_HOST")
 	conf.Server.Origin = os.Getenv("APP_ORIGIN")
 
-	conf.Opentelemetry.Name = os.Getenv("OTEL_CONFIG_SERVICE_NAME")
+	conf.Elasticsearch.URL = os.Getenv("ELASTICSEARCH_URL")
+	conf.Elasticsearch.Username = os.Getenv("ELASTICSEARCH_USERNAME")
+	conf.Elasticsearch.Password = os.Getenv("ELASTICSEARCH_PASSWORD")
+
 	return &conf
 }
