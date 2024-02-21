@@ -22,6 +22,7 @@ import (
 
 func serve(db *gorm.DB, conf *config.App, es *elasticsearch.Client) {
 	app := mux.NewRouter().StrictSlash(true)
+	app.Use(middleware.CORS)
 
 	validator := middleware.NewValidation()
 
