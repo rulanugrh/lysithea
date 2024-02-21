@@ -54,6 +54,8 @@ func initConfig() *App {
 		conf.Server.Origin = ""
 
 		conf.Elasticsearch.URL = ""
+		conf.Elasticsearch.Username = ""
+		conf.Elasticsearch.Password = ""
 
 		return &conf
 	}

@@ -24,7 +24,7 @@ func NewConnection() (*gorm.DB, error) {
 		return nil, web.InternalServerError("Cant connect to postgresql")
 	}
 
-	log.Print("Success connect to database")
+	log.Println("Success connect to database")
 
 	return db, nil
 }
