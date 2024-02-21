@@ -121,7 +121,7 @@ func (p *product) FindAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(web.Success("data found", data))
+	response, err := json.Marshal(data)
 	if err != nil {
 		w.WriteHeader(500)
 		return
@@ -154,7 +154,7 @@ func (p *product) FindAllByCategoryID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(web.Success("data found", data))
+	response, err := json.Marshal(data)
 	if err != nil {
 		w.WriteHeader(500)
 		return
@@ -191,7 +191,7 @@ func (p *product) FindBySearch(w http.ResponseWriter, r *http.Request) {
 		Data: data,
 	}
 
-	response, err := json.Marshal(web.Success("data found", result))
+	response, err := json.Marshal(result)
 	if err != nil {
 		w.WriteHeader(500)
 		return

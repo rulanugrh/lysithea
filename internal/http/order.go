@@ -215,7 +215,7 @@ func (o *order) Cart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(web.Success("printout cart", data))
+	response, err := json.Marshal(data)
 	if err != nil {
 		w.WriteHeader(500)
 		return
@@ -256,7 +256,7 @@ func (o *order) History(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(web.Success("printout order history", data))
+	response, err := json.Marshal(data)
 	if err != nil {
 		w.WriteHeader(500)
 		return
