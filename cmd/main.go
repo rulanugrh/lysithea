@@ -42,7 +42,7 @@ func serve(db *gorm.DB, conf *config.App, es *elasticsearch.Client) {
 	categoryService := service.NewCategoryService(categoryRepository, validator, es)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 
-	route.UserRouter(app, userHandler)
+	route.UserRouter(app, userHandler, conf)
 	route.ProductRoute(app, productHandler)
 	route.OrderRouter(app, orderHandler)
 	route.CategoryRouter(app, categoryHandler)
