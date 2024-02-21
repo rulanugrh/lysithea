@@ -1,4 +1,401 @@
+openapi: 3.0.3
 info:
-  contact: {}
-paths: {}
-swagger: "2.0"
+  title: Lysithe API
+  description: >-
+    Documentation Lysithea API Project
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: rulanugrh@proton.me
+  license:
+    name: MIT
+    url: https://mit-license.org
+  version: 1.0.0
+
+servers:
+  - url: https://localhost:3000
+tags:
+  - name: user
+    description: Route path about user API
+  - name: product
+    description: Route path about product API
+  - name: order
+    description: Route path about order API
+  - name: admin
+    description: Route path about admin API
+paths:
+  /api/v1/user/register:
+    post:
+      tags:
+        - user
+      summary: Register new user
+      description: Create new user
+      operationId: registerUser
+      requestBody:
+        description: Register new user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+        required: true
+      responses:
+        '201':
+          description: Account Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUserRegister'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+          
+  /api/v1/user/login:
+    post:
+      tags:
+        - user
+      summary: Login user into the system
+      description: Login user
+      operationId: loginUser
+      requestBody:
+        description: Login user into the system
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+        required: true
+      responses:
+        '200':
+          description: Success Login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUserLogin'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+          
+  /api/v1/product/create:
+    post:
+      tags:
+        - admin
+      summary: Create New Product
+      description: Create Product
+      operationId: productCreate
+      requestBody:
+        description: Create new Product
+        content:
+          application/json:
+            schema:
+              $ref: '#/definitions/domain.ProductRequest'
+        required: true
+      responses:
+        '201':
+          description: Product Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/web.Response'
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+        '403':
+          description: Sorry you not admin or owner
+      security:
+        - jwtToken: []
+  /api/v1/product/category/{id}:
+    get:
+      tags:
+        - product
+      summary: Get all product by category ID
+      description: Get all product by category ID
+      operationId: getByCategory
+      parameters:
+        - name: id
+          in: path
+          description: ID of category product
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: Product Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/web.Response'
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+      security:
+        - jwtToken: []
+  /api/v1/product/find/{id}:
+    get:
+      tags:
+        - product
+      summary: Get product by ID
+      description: Get product by ID
+      operationId: getByProductID
+      parameters:
+        - name: id
+          in: path
+          description: ID of product
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: Product Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/web.Response',
+                $ref: '#/definitions/web.ProductResponse',
+                
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+      security:
+        - jwtToken: []
+  /api/v1/product/find:
+    get:
+      tags:
+        - product
+      summary: Get All Product
+      description: Get All Product
+      operationId: getAllProduct
+      responses:
+        '201':
+          description: Product Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/web.Response',
+                $ref: '#/definitions/web.ProductResponse',
+                
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+      security:
+        - jwtToken: []
+  /api/v1/product/find:
+    get:
+      tags:
+        - product
+      summary: Get All Product
+      description: Get All Product
+      operationId: getAllProduct
+      parameters:
+        - name: page
+          in: query
+          description: Page query for get page
+          required: true
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          description: Total data to show in one page
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Product Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/web.Response',
+                $ref: '#/definitions/web.Pagination',
+                
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+      security:
+        - jwtToken: []
+  /api/v1/product/get:
+    get:
+      tags:
+        - product
+      summary: Get All Product By Search
+      description: Get All Product By Search
+      operationId: getAllProductBySearch
+      parameters:
+        - name: page
+          in: query
+          description: Page query for get page
+          required: true
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          description: Total data to show in one page
+          required: true
+          schema:
+            type: integer
+        - name: search
+          in: query
+          description: You can use name product to search product
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/web.Response',
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+      security:
+        - jwtToken: []
+components:
+  schemas:
+    Order:
+      required:
+        - userId
+        - productId
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          example: 1
+        productId:
+          type: integer
+          format: int64
+          example: 1
+        status:
+          type: string
+          description: Order Status
+          example: approved
+          enum:
+            - process
+            - paid
+    UserRegister:
+      required:
+        - name
+        - email
+        - password
+        - nohp
+      type: object
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: johndoe@co.id
+        password:
+          type: string
+          example: th1s_1s_c335t
+        nohp:
+          type: integer
+          format: int64
+          example: 085467432323
+    UserLogin:
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+          example: johndoe@co.id
+        password:
+          type: string
+          example: th1s_1s_c335t
+    ResponseUserRegister:
+      type: object
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: johndoe@co.id   
+    ResponseUserLogin:
+      type: object
+      properties:
+        token:
+          type: string
+          example: thi1s_3s_tok5n_j45
+    ApiResponseUserRegister:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/ResponseUserRegister"
+    ApiResponseUserLogin:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/ResponseUserLogin"
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: string
+          example: nil
+    
+  securitySchemes:
+    authorization:
+      type: apiKey
+      name: authorization
+      in: header
+
+    jwtToken:
+      type: apiKey
+      name: jwtToken
+      in: header

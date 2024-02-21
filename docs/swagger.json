@@ -1,7 +1,36 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "contact": {
+            "name": "Pradana",
+            "email": "rulanugrh@proton.me"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://mit-license.org"
+        }
     },
-    "paths": {}
+    "paths": {
+        "/api/v1/user/register": {
+            "post": {
+                "tags": "user",
+                "description": "this path for register user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "description": "Register User",
+                        "name": "input",
+                        "in": "body",
+                        "required": "true",
+                        "scheme": ""
+                    }
+                ]
+            }
+        }
+    }
 }
