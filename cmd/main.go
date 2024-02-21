@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/rulanugrh/lysithea/internal/config"
 	handler "github.com/rulanugrh/lysithea/internal/http"
@@ -46,9 +47,10 @@ func serve(db *gorm.DB, conf *config.App, es *elasticsearch.Client) {
 	route.CategoryRouter(app, categoryHandler)
 
 	host := fmt.Sprintf("%s:%s", conf.Server.Host, conf.Server.Port)
+	logger := handlers.LoggingHandler(os.Stdout, app)
 	server := http.Server{
 		Addr:    host,
-		Handler: app,
+		Handler: logger,
 	}
 	err := server.ListenAndServe()
 	if err != nil {
