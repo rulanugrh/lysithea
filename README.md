@@ -16,6 +16,8 @@ Haii, is my project, in this project about implementation ELK (Elasticsearch, Lo
 - Elasticsearch
 - Kibana
 - Logstash
+- JWT (JSON Web Token)
+- [Validator](https://github.com/go-playground/validator)
 - Mux (Web Framework)
 
 ## Installation
