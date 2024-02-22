@@ -28,6 +28,13 @@ type App struct {
 		Username string
 		Password string
 	}
+
+	ElasticAPM struct {
+		Name    string
+		APIKey  string
+		Version string
+		Env     string
+	}
 }
 
 var app *App
@@ -57,6 +64,11 @@ func initConfig() *App {
 		conf.Elasticsearch.Username = ""
 		conf.Elasticsearch.Password = ""
 
+		conf.ElasticAPM.APIKey = ""
+		conf.ElasticAPM.Env = ""
+		conf.ElasticAPM.Version = ""
+		conf.ElasticAPM.Name = ""
+
 		return &conf
 	}
 
@@ -75,6 +87,11 @@ func initConfig() *App {
 	conf.Elasticsearch.URL = os.Getenv("ELASTICSEARCH_URL")
 	conf.Elasticsearch.Username = os.Getenv("ELASTICSEARCH_USERNAME")
 	conf.Elasticsearch.Password = os.Getenv("ELASTICSEARCH_PASSWORD")
+
+	conf.ElasticAPM.APIKey = os.Getenv("ELASTIC_APM_SERVICE_API_KEY")
+	conf.ElasticAPM.Name = os.Getenv("ELASTIC_APM_SERVICE_NAME")
+	conf.ElasticAPM.Version = os.Getenv("ELASTIC_APM_SERVICE_VERSION")
+	conf.ElasticAPM.Env = os.Getenv("ELASTIC_APM_SERVICE_ENVIRONTMENT")
 
 	return &conf
 }
