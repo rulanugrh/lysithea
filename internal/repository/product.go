@@ -44,6 +44,16 @@ func (p *product) Create(req domain.ProductRequest) (*domain.Product, error) {
 		return nil, web.InternalServerError("cannot create product")
 	}
 
+	errAppend := p.db.Model(&product.Category).Association("Product").Append(&product)
+	if errAppend != nil {
+		return nil, web.InternalServerError(errAppend.Error())
+	}
+
+	errPreload := p.db.Preload("Category").Find(&product).Error
+	if errPreload != nil {
+		return nil, web.InternalServerError(errPreload.Error())
+	}
+
 	return &product, nil
 }
 

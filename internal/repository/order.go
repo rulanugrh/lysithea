@@ -46,7 +46,7 @@ func (o *order) AddToCart(req domain.Cart) (*domain.Cart, error) {
 
 func (o *order) FindID(uuid string) (*domain.Order, error) {
 	var req domain.Order
-	err := o.db.Where("uuid = ?", uuid).Find(&req).Error
+	err := o.db.Where("uuid = ?", uuid).Preload("Product").Preload("User").Find(&req).Error
 	if err != nil {
 		return nil, web.InternalServerError("data not found")
 	}
@@ -56,7 +56,7 @@ func (o *order) FindID(uuid string) (*domain.Order, error) {
 
 func (o *order) Cart(userID uint, page int, perPage int) (*[]domain.Cart, error) {
 	var req []domain.Cart
-	err := o.db.Scopes(util.PaginationSet(page, perPage)).Where("user_id = ?", userID).Find(&req).Error
+	err := o.db.Scopes(util.PaginationSet(page, perPage)).Where("user_id = ?", userID).Preload("Product").Preload("User").Find(&req).Error
 	if err != nil {
 		return nil, web.InternalServerError("data not found")
 	}
@@ -129,12 +129,17 @@ func (o *order) Checkout(id uint) (*domain.Order, error) {
 		return nil, web.InternalServerError(err.Error())
 	}
 
+	errFind := o.db.Preload("Product").Preload("User").Find(&req).Error
+	if errFind != nil {
+		return nil, web.InternalServerError(errFind.Error())
+	}
+
 	return &req, nil
 }
 
 func (o *order) History(userID uint, page int, perPage int) (*[]domain.Order, error) {
 	var req []domain.Order
-	err := o.db.Scopes(util.PaginationSet(page, perPage)).Where("user_id = ?", userID).Where("status = ?", "paid").Find(&req).Error
+	err := o.db.Scopes(util.PaginationSet(page, perPage)).Where("user_id = ?", userID).Where("status = ?", "paid").Preload("Product").Preload("User").Find(&req).Error
 	if err != nil {
 		return nil, web.InternalServerError("data not found")
 	}
