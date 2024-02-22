@@ -22,24 +22,29 @@ import (
 
 func serve(db *gorm.DB, conf *config.App, es *elasticsearch.Client) {
 	app := mux.NewRouter().StrictSlash(true)
+
+	getTrace := config.NewTracerOtel()
+	getMetric := config.NewMeterOtel()
+	trace := config.GetTracer(*getTrace)
+
 	app.Use(middleware.CORS)
 
 	validator := middleware.NewValidation()
 
 	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository, validator)
+	userService := service.NewUserService(userRepository, validator, trace, getMetric)
 	userHandler := handler.NewUserHandler(userService)
 
 	productRepository := repository.NewProductRepository(db)
-	productService := service.NewProductService(productRepository, validator, es)
+	productService := service.NewProductService(productRepository, validator, es, trace, getMetric)
 	productHandler := handler.NewProductHandler(productService)
 
 	orderRepository := repository.NewOrderRepository(db)
-	orderService := service.NewOrderService(orderRepository, validator, *conf)
+	orderService := service.NewOrderService(orderRepository, validator, *conf, trace, getMetric)
 	orderHandler := handler.NewOrderHandler(orderService)
 
 	categoryRepository := repository.NewCategoryRepository(db)
-	categoryService := service.NewCategoryService(categoryRepository, validator, es)
+	categoryService := service.NewCategoryService(categoryRepository, validator, es, trace, getMetric)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 
 	route.UserRouter(app, userHandler, conf)

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"math"
 
@@ -9,6 +10,8 @@ import (
 	"github.com/rulanugrh/lysithea/internal/entity/web"
 	"github.com/rulanugrh/lysithea/internal/middleware"
 	"github.com/rulanugrh/lysithea/internal/repository"
+	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type OrderService interface {
@@ -25,17 +28,28 @@ type order struct {
 	repo     repository.OrderRepository
 	validate middleware.ValidationInterface
 	conf     config.App
+	trace    trace.Tracer
+	meter    metric.MeterProvider
 }
 
-func NewOrderService(repo repository.OrderRepository, validate middleware.ValidationInterface, conf config.App) OrderService {
+func NewOrderService(repo repository.OrderRepository, validate middleware.ValidationInterface, conf config.App, trace trace.Tracer, meter metric.MeterProvider) OrderService {
 	return &order{
 		repo:     repo,
 		validate: validate,
 		conf:     conf,
+		trace:    trace,
+		meter:    meter,
 	}
 }
 
 func (o *order) AddToCart(req domain.Cart) (*web.Cart, error) {
+	ctx, span := o.trace.Start(context.Background(), "add-to-cart")
+	defer span.End()
+
+	meter := o.meter.Meter("meter-add-to-cart")
+	counter, _ := meter.Float64Counter("metric_called")
+	counter.Add(ctx, 1)
+
 	err := o.validate.Validate(req)
 	if err != nil {
 		return nil, o.validate.ValidationMessage(err)
@@ -61,6 +75,13 @@ func (o *order) AddToCart(req domain.Cart) (*web.Cart, error) {
 }
 
 func (o *order) FindID(uuid string) (*web.OrderResponse, error) {
+	ctx, span := o.trace.Start(context.Background(), "find-by-uuid-order")
+	defer span.End()
+
+	meter := o.meter.Meter("meter-find-by-uuid")
+	counter, _ := meter.Float64Counter("metric_called")
+	counter.Add(ctx, 1)
+
 	data, err := o.repo.FindID(uuid)
 	if err != nil {
 		return nil, web.StatusNotFound(err.Error())
@@ -80,6 +101,13 @@ func (o *order) FindID(uuid string) (*web.OrderResponse, error) {
 }
 
 func (o *order) History(userID uint, page int, perPage int) (*web.Pagination, error) {
+	ctx, span := o.trace.Start(context.Background(), "history-order")
+	defer span.End()
+
+	meter := o.meter.Meter("meter-history-order")
+	counter, _ := meter.Float64Counter("metric_called")
+	counter.Add(ctx, 1)
+
 	data, err := o.repo.History(userID, page, perPage)
 	if err != nil {
 		return nil, web.StatusNotFound("Order not found by this user id")
@@ -121,6 +149,13 @@ func (o *order) History(userID uint, page int, perPage int) (*web.Pagination, er
 }
 
 func (o *order) Buy(req domain.Order) (*web.BuyResponse, error) {
+	ctx, span := o.trace.Start(context.Background(), "buy-product")
+	defer span.End()
+
+	meter := o.meter.Meter("meter-buy-product")
+	counter, _ := meter.Float64Counter("metric_called")
+	counter.Add(ctx, 1)
+
 	err := o.validate.Validate(req)
 	if err != nil {
 		return nil, o.validate.ValidationMessage(err)
@@ -144,6 +179,13 @@ func (o *order) Buy(req domain.Order) (*web.BuyResponse, error) {
 }
 
 func (o *order) Pay(uuid string, userID uint) (*web.PaymentResponse, error) {
+	ctx, span := o.trace.Start(context.Background(), "pay-product")
+	defer span.End()
+
+	meter := o.meter.Meter("meter-pay-product")
+	counter, _ := meter.Float64Counter("metric_called")
+	counter.Add(ctx, 1)
+
 	data, err := o.repo.Pay(uuid, userID)
 	if err != nil {
 		return nil, web.InternalServerError(err.Error())
@@ -170,6 +212,13 @@ func (o *order) Pay(uuid string, userID uint) (*web.PaymentResponse, error) {
 }
 
 func (o *order) Checkout(id uint) (*web.BuyResponse, error) {
+	ctx, span := o.trace.Start(context.Background(), "checkout-product")
+	defer span.End()
+
+	meter := o.meter.Meter("meter-checkout-product")
+	counter, _ := meter.Float64Counter("metric_called")
+	counter.Add(ctx, 1)
+
 	data, err := o.repo.Checkout(id)
 	if err != nil {
 		return nil, web.StatusNotFound(err.Error())
@@ -188,6 +237,13 @@ func (o *order) Checkout(id uint) (*web.BuyResponse, error) {
 }
 
 func (o *order) Cart(userID uint, page int, perPage int) (*web.Pagination, error) {
+	ctx, span := o.trace.Start(context.Background(), "list-cart")
+	defer span.End()
+
+	meter := o.meter.Meter("meter-list-cart")
+	counter, _ := meter.Float64Counter("metric_called")
+	counter.Add(ctx, 1)
+
 	result, err := o.repo.Cart(userID, page, perPage)
 	if err != nil {
 		return nil, web.StatusNotFound(err.Error())

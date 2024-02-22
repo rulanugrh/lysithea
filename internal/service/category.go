@@ -2,6 +2,7 @@ package service
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"log"
 
@@ -10,6 +11,8 @@ import (
 	"github.com/rulanugrh/lysithea/internal/entity/web"
 	"github.com/rulanugrh/lysithea/internal/middleware"
 	"github.com/rulanugrh/lysithea/internal/repository"
+	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type CategoryService interface {
@@ -21,17 +24,28 @@ type category struct {
 	repo     repository.CategoryRepository
 	validate middleware.ValidationInterface
 	es       *elasticsearch.Client
+	trace    trace.Tracer
+	meter    metric.MeterProvider
 }
 
-func NewCategoryService(repo repository.CategoryRepository, validate middleware.ValidationInterface, es *elasticsearch.Client) CategoryService {
+func NewCategoryService(repo repository.CategoryRepository, validate middleware.ValidationInterface, es *elasticsearch.Client, trace trace.Tracer, meter metric.MeterProvider) CategoryService {
 	return &category{
 		repo:     repo,
 		validate: validate,
 		es:       es,
+		trace:    trace,
+		meter:    meter,
 	}
 }
 
 func (c *category) Create(req domain.Category) (*web.CategoryCreated, error) {
+	ctx, span := c.trace.Start(context.Background(), "create-category")
+	defer span.End()
+
+	meter := c.meter.Meter("meter-create-category")
+	counter, _ := meter.Float64Counter("metric_called")
+	counter.Add(ctx, 1)
+
 	err := c.validate.Validate(req)
 	if err != nil {
 		return nil, c.validate.ValidationMessage(err)
@@ -51,6 +65,13 @@ func (c *category) Create(req domain.Category) (*web.CategoryCreated, error) {
 }
 
 func (c *category) GetCategoryBySearch(page int, perPage int, search string, buf bytes.Buffer) (map[string]interface{}, error) {
+	ctx, span := c.trace.Start(context.Background(), "get-category-by-search")
+	defer span.End()
+
+	meter := c.meter.Meter("meter--category")
+	counter, _ := meter.Float64Counter("metric_called")
+	counter.Add(ctx, 1)
+
 	query := map[string]interface{}{
 		"collapse": map[string]interface{}{
 			"field": "name.keyword",
