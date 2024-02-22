@@ -17,6 +17,7 @@ import (
 	"github.com/rulanugrh/lysithea/internal/route"
 	"github.com/rulanugrh/lysithea/internal/service"
 	"github.com/rulanugrh/lysithea/internal/util"
+	"go.elastic.co/apm/module/apmhttp/v2"
 	"gorm.io/gorm"
 )
 
@@ -56,7 +57,7 @@ func serve(db *gorm.DB, conf *config.App, es *elasticsearch.Client) {
 	logger := handlers.LoggingHandler(os.Stdout, app)
 	server := http.Server{
 		Addr:    host,
-		Handler: logger,
+		Handler: apmhttp.Wrap(logger),
 	}
 	err := server.ListenAndServe()
 	if err != nil {
