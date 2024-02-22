@@ -23,6 +23,8 @@ Haii, is my project, in this project about implementation ELK (Elasticsearch, Lo
 - JWT (JSON Web Token)
 - [Validator](https://github.com/go-playground/validator)
 - Mux (Web Framework)
+- Opentelemetry
+- Elasticsearch APM
 
 ## Installation
 
