@@ -11,6 +11,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/swaggo/http-swagger/v2 v2.0.2
 	github.com/swaggo/swag v1.16.3
+	go.elastic.co/apm/module/apmhttp/v2 v2.4.8
 	go.elastic.co/apm/module/apmotel/v2 v2.4.8
 	go.elastic.co/apm/v2 v2.4.8
 	go.opentelemetry.io/otel v1.23.1
@@ -51,7 +52,6 @@ require (
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/swaggo/files/v2 v2.0.0 // indirect
-	go.elastic.co/apm/module/apmhttp/v2 v2.4.8 // indirect
 	go.elastic.co/fastjson v1.1.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.21.0 // indirect
 	golang.org/x/net v0.21.0 // indirect
