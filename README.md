@@ -46,6 +46,18 @@ Install go modules
 go mod tidy
 ```
 
+## Before Running
+You must running db, elasticsearch, kibana, and logstash.
+
+```
+docker compose up -d db
+docker compose up -d elasticsearch
+docker compose up -d kibana
+docker compose up -d logstash
+```
+
+If you dont have docker you can install docker, see [Docker Docs](https://docs-docker-com.translate.goog/engine/install).
+
 ## Running
 
 Copy `.env.example` to `.env`

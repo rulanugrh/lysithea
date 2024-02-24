@@ -45,7 +45,7 @@ services:
       - "9300:9300"
       - "9200:9200"
     environment:
-      - xpack.security.enabled=false
+      - xpack.security.enabled=true
       - discovery.type=single-node
       - network.host=0.0.0.0
       - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
@@ -62,6 +62,12 @@ services:
       - "5601:5601"
     networks:
       - connection
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_MONITORING_ENABLED=true
+      - XPACK_MONITORING_COLLECTION_ENABLED=true
+      - ELASTICSEARCH_USERNAME=admin
+      - ELASTICSEARCH_PASSWORD="admin"
     depends_on:
       - elasticsearch
 
@@ -81,7 +87,7 @@ services:
     depends_on:
       - elasticsearch
       - kibana
-      - postgres
+      - db
 
   nginx-app:
     container_name: nginx-app
