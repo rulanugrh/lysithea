@@ -1,0 +1,17 @@
+name: build-binary
+on: [push, pull_request]
+
+jobs:
+  unit-test-lysithea:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - run: echo "running build binary"
+    - uses: actions/setup-go@v5
+
+      with:
+        go-version: '1.21.6'
+
+
+    - name: running unit test all services
+      run: go mod tidy && go test -v ./tests/
