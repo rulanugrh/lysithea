@@ -24,3 +24,6 @@ go.work
 .env
 .env.dev
 .env.prod
+
+# Go sum file
+go.sum
