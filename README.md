@@ -115,49 +115,57 @@ This project stucture i use, hmm It looks like this structure is familiar to you
 │   │   └── pusher.conf
 │   └── nginx
 │       └── nginx.conf
-└── internal
-    ├── config
-    │   ├── app.go
-    │   ├── db.go
-    │   └── elasticsearch.go
-    ├── entity
-    │   ├── domain
-    │   │   ├── category.go
-    │   │   ├── order.go
-    │   │   ├── product.go
-    │   │   └── user.go
-    │   └── web
-    │       ├── response.go
-    │       └── response_data.go
-    ├── http
-    │   ├── category.go
-    │   ├── order.go
-    │   ├── product.go
-    │   └── user.go
-    ├── middleware
-    │   ├── jwt.go
-    │   ├── token.go
-    │   └── validation.go
-    ├── repository
-    │   ├── category.go
-    │   ├── order.go
-    │   ├── product.go
-    │   └── user.go
-    ├── route
-    │   ├── category.go
-    │   ├── order.go
-    │   ├── product.go
-    │   └── user.go
-    ├── service
-    │   ├── category.go
-    │   ├── order.go
-    │   ├── product.go
-    │   └── user.go
-    └── util
-        ├── migration.go
-        ├── pagination.go
-        ├── seeder.go
-        └── uuid.go
+├── internal
+│   ├── config
+│   │   ├── app.go
+│   │   ├── db.go
+│   │   ├── elasticsearch.go
+│   │   └── otelapm.go
+│   ├── entity
+│   │   ├── domain
+│   │   │   ├── category.go
+│   │   │   ├── order.go
+│   │   │   ├── product.go
+│   │   │   └── user.go
+│   │   └── web
+│   │       ├── response.go
+│   │       └── response_data.go
+│   ├── http
+│   │   ├── category.go
+│   │   ├── order.go
+│   │   ├── product.go
+│   │   └── user.go
+│   ├── middleware
+│   │   ├── cors.go
+│   │   ├── jwt.go
+│   │   ├── token.go
+│   │   └── validation.go
+│   ├── mocks
+│   │   ├── category_repository_mock.go
+│   │   └── user_repository_mock.go
+│   ├── repository
+│   │   ├── category.go
+│   │   ├── order.go
+│   │   ├── product.go
+│   │   └── user.go
+│   ├── route
+│   │   ├── category.go
+│   │   ├── order.go
+│   │   ├── product.go
+│   │   └── user.go
+│   ├── service
+│   │   ├── category.go
+│   │   ├── order.go
+│   │   ├── product.go
+│   │   └── user.go
+│   └── util
+│       ├── migration.go
+│       ├── pagination.go
+│       ├── seeder.go
+│       └── uuid.go
+└── tests
+    ├── category_repository_test.go
+    └── user_repository_test.go
 ```
 
 ## LICENSE
