@@ -74,6 +74,39 @@ func (order *OrderTest) TestOrderBuy() {
 	order.Equal("Process", data.Status)
 }
 
+func (order *OrderTest) TestOrderCheckout() {
+	orderResult := func(id uint) *domain.Order {
+		output := domain.Order{}
+		return &output
+	}
+
+	order.repo.On("Checkout", mock.MatchedBy(func(id uint) bool {
+		return id > 0
+	})).Return(orderResult, nil)
+
+	data, err := order.repo.Checkout(1)
+
+	order.Nil(err)
+	order.Equal(&domain.Order{}, data)
+}
+
+func (order *OrderTest) TestOrderPay() {
+	orderResult := func(uuid string, userID uint) *domain.Order {
+		output := domain.Order{}
+		output.UUID = uuid
+		output.UserID = userID
+		return &output
+	}
+
+	order.repo.On("Pay", mock.AnythingOfType("string"), mock.AnythingOfType("uint")).Return(orderResult, nil)
+
+	data, err := order.repo.Pay("72300e52-d62c-42d0-8c53-426da447c798", 1)
+
+	order.Nil(err)
+	order.Equal(uint(1), data.UserID)
+	order.Equal("72300e52-d62c-42d0-8c53-426da447c798", data.UUID)
+}
+
 func TestOrder(t *testing.T) {
 	suite.Run(t, NewOrderTest())
 }
