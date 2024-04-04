@@ -73,6 +73,39 @@ func (product *ProductTest) TestProductFindByID() {
 	product.Equal(uint(1), data.ID)
 }
 
+func (product *ProductTest) TestProductFindAll() {
+	productResult := func(page int, perPage int) *[]domain.Product {
+		output := &[]domain.Product{}
+		return output
+	}
+
+	product.repo.On("FindAll", mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(productResult, nil)
+
+	data, err := product.repo.FindAll(10, 10)
+
+	product.Nil(err)
+	product.Equal(&[]domain.Product{}, data)
+}
+
+func (product *ProductTest) TestProductUpdate() {
+	productResult := func(id uint, input domain.Product) *domain.Product {
+		output := &domain.Product{}
+		output.ID = id
+		output.Stock = input.Stock
+		return output
+	}
+
+	product.repo.On("Update", mock.AnythingOfType("uint"), mock.AnythingOfType("domain.Product")).Return(productResult, nil)
+
+	data, err := product.repo.Update(1, domain.Product{
+		Stock: 10,
+	})
+
+	product.Nil(err)
+	product.Equal(uint(1), data.ID)
+	product.Equal(10, data.Stock)
+}
+
 func TestProduct(t *testing.T) {
 	suite.Run(t, NewProductTest())
 }
