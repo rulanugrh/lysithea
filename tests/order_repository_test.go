@@ -107,6 +107,33 @@ func (order *OrderTest) TestOrderPay() {
 	order.Equal("72300e52-d62c-42d0-8c53-426da447c798", data.UUID)
 }
 
+func (order *OrderTest) TestOrderUpdate() {
+	order.repo.On("Update", mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("domain.Order")).Return(nil)
+
+	err := order.repo.Update("72300e52-d62c-42d0-8c53-426da447c798", "success", domain.Order{
+		Total: 10,
+	})
+
+	order.Nil(err)
+}
+
+func (order *OrderTest) TestOrderFindID() {
+	orderResult := func(uuid string) *domain.Order {
+		output := domain.Order{}
+		output.UUID = uuid
+		return &output
+	}
+
+	order.repo.On("FindID", mock.MatchedBy(func(uuid string) bool {
+		return uuid != ""
+	})).Return(orderResult, nil)
+
+	data, err := order.repo.FindID("72300e52-d62c-42d0-8c53-426da447c798")
+
+	order.Nil(err)
+	order.Equal("72300e52-d62c-42d0-8c53-426da447c798", data.UUID)
+}
+
 func TestOrder(t *testing.T) {
 	suite.Run(t, NewOrderTest())
 }
