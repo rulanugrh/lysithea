@@ -134,6 +134,45 @@ func (order *OrderTest) TestOrderFindID() {
 	order.Equal("72300e52-d62c-42d0-8c53-426da447c798", data.UUID)
 }
 
+func (order *OrderTest) TestOrderHistory() {
+	orderHistory :=  func(userID uint, page int, perPage int) *[]domain.Order {
+		output := &[]domain.Order{}
+		for _, v := range *output {
+			v.UserID = userID
+		}
+
+		return output
+	}
+
+	order.repo.On("History", mock.AnythingOfType("uint"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(orderHistory, nil)
+
+	data, err := order.repo.History(1, 10, 10)
+
+	for _, v := range *data {
+		order.Equal(uint(1), v.UserID)
+	}
+	order.Nil(err)
+}
+
+func (order *OrderTest) TestOrderCart() {
+	orderHistory :=  func(userID uint, page int, perPage int) *[]domain.Cart {
+		output := &[]domain.Cart{}
+		for _, v := range *output {
+			v.UserID = userID
+		}
+
+		return output
+	}
+
+	order.repo.On("Cart", mock.AnythingOfType("uint"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(orderHistory, nil)
+
+	data, err := order.repo.Cart(1, 10, 10)
+
+	for _, v := range *data {
+		order.Equal(uint(1), v.UserID)
+	}
+	order.Nil(err)
+}
 func TestOrder(t *testing.T) {
 	suite.Run(t, NewOrderTest())
 }
