@@ -11,7 +11,7 @@ import (
 
 func UserRouter(router *mux.Router, handler handler.UserHandler, conf *config.App) {
 	router.HandleFunc("/docs/*", httpSwagger.Handler(
-		httpSwagger.URL(fmt.Sprintf("%s:%s/docs/swagger.json", conf.Server.URL, conf.Server.Port)),
+		httpSwagger.URL(fmt.Sprintf("http://%s:%s/docs/swagger.json", conf.Server.Host, conf.Server.Port)),
 	))
 	subrouter := router.PathPrefix("/api/v1/user/").Subrouter()
 	subrouter.HandleFunc("/register", handler.Register).Methods("POST")
