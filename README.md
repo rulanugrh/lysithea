@@ -31,7 +31,7 @@ Haii, is my project, in this project about implementation ELK (Elasticsearch, Lo
 Clone this project on your local laptop
 
 ```
-git clone https://github.com/rualnugrh/lysithea
+git clone https://github.com/rulanugrh/lysithea
 ```
 
 Go to project folder
@@ -69,19 +69,19 @@ cp .env.example .env
 Make sure your PostgresQL is running and you have it setup, and then migrate struct
 
 ```
-go cmd/main.go migrate
+go run cmd/main.go migrate
 ```
 
 After running migration you can seed data to db
 
 ```
-go cmd/main.go seeder
+go run cmd/main.go seeder
 ```
 
 And last, you can running HTTP Server
 
 ```
-go cmd/main.go serve
+go run cmd/main.go serve
 ```
 
 ## Docs
